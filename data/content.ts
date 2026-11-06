@@ -92,7 +92,7 @@ export const COPY: Record<Lang, Copy> = {
     learning: [
       ['nucba', 'Carrera Full Stack · Carrera Backend · Bootcamp UX/UI · Introducción a Blockchain, Web3 y AI (validado por la Universidad de La Matanza)'],
       ['cloud', 'AWS Cloud Practitioner Essentials · Fundamentos de infraestructura en AWS · AWS nivel intermedio'],
-      ['lenguajes', 'Rust: fundamentos'],
+      ['lenguajes', 'JavaScript · TypeScript · Rust (fundamentos)'],
       ['ai engineering', 'Agentic Engineering: agentes de IA · LLMs y aplicaciones de IA generativa · Grafos y Knowledge Graphs para IA'],
     ],
     contactIntro: 'Abierto a conversar sobre proyectos backend, infraestructura y agentic engineering.',
@@ -151,7 +151,7 @@ export const COPY: Record<Lang, Copy> = {
     learning: [
       ['nucba', 'Full Stack Program · Backend Program · UX/UI Bootcamp · Intro to Blockchain, Web3 and AI (validated by Universidad de La Matanza)'],
       ['cloud', 'AWS Cloud Practitioner Essentials · AWS infrastructure fundamentals · AWS intermediate level'],
-      ['languages', 'Rust: fundamentals'],
+      ['languages', 'JavaScript · TypeScript · Rust (fundamentals)'],
       ['ai engineering', 'Agentic Engineering: AI agents · LLMs and generative AI applications · Graphs and Knowledge Graphs for AI'],
     ],
     contactIntro: 'Open to talk about backend, infrastructure and agentic engineering projects.',
