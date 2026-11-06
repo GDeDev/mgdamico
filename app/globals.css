@@ -54,34 +54,46 @@ form input:focus-visible { outline: none; }
 .about > div { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .pressbtn { background: transparent; border: 0; color: #5dff6a; font-size: 13px; min-height: 28px; padding: 0; cursor: pointer; text-align: left; }
 
-/* soft view */
-.soft-page { height: 100dvh; overflow-y: auto; scrollbar-width: thin; background: #faf8f4; color: #2a2723; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.65; }
+/* boot menu */
+.menu { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+.menu button { background: transparent; border: 0; color: #d3ecd8; font-size: 13px; min-height: 30px; padding: 0; cursor: pointer; text-align: left; }
+.menu button b { color: #5dff6a; font-weight: 700; }
+.menu button:hover, .menu button:focus-visible { color: #5dff6a; }
+.menu .d { color: #8fb59a; }
+
+/* site view: minimal / neo-brutalist */
+.soft-page { --bg:#fff; --fg:#111; --mut:#777; --acc:#111; --card:#fff; --bd:#e6e6e6; --rad:0; --sh:none; --bw:1px; --hd:500;
+  height: 100dvh; overflow-y: auto; scrollbar-width: thin; background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.65; }
+.soft-page.brutal { --bg:#ffe94d; --fg:#000; --mut:#333; --acc:#ff4d8d; --card:#fff; --bd:#000; --sh:6px 6px 0 #000; --bw:3px; --hd:900; }
 .soft-page::-webkit-scrollbar { display: block; width: 8px; }
-.soft-page::-webkit-scrollbar-thumb { background: #d8d2c6; border-radius: 4px; }
-.soft-top { max-width: 760px; margin: 0 auto; padding: 16px 20px 0; display: flex; justify-content: space-between; align-items: center; }
-.soft-toggle { display: inline-flex; background: #efeae0; border-radius: 999px; padding: 3px; }
-.soft-toggle button { border: 0; background: transparent; color: #6b645a; font: inherit; font-size: 13px; padding: 4px 14px; border-radius: 999px; cursor: pointer; }
-.soft-toggle button.on { background: #fff; color: #2a2723; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
-.soft-link { border: 0; background: transparent; color: #4a7c59; font: inherit; font-size: 14px; cursor: pointer; padding: 6px 4px; }
-.soft-link:hover { text-decoration: underline; }
+.soft-page::-webkit-scrollbar-thumb { background: var(--mut); }
+.soft-top { max-width: 760px; margin: 0 auto; padding: 16px 20px 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.soft-toggle { display: inline-flex; border: var(--bw) solid var(--bd); background: var(--card); box-shadow: var(--sh); }
+.soft-toggle button { border: 0; background: transparent; color: var(--fg); font: inherit; font-size: 13px; padding: 4px 12px; cursor: pointer; }
+.soft-toggle button.on { background: var(--fg); color: var(--bg); }
+.brutal .soft-toggle button.on { background: var(--acc); color: #000; font-weight: 700; }
+.soft-link { border: 0; background: transparent; color: var(--fg); font: inherit; font-size: 14px; cursor: pointer; padding: 6px 4px; text-decoration: underline; }
 .soft-main { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; display: flex; flex-direction: column; gap: 36px; }
-.soft-main h1 { margin: 0 0 2px; font-size: 30px; line-height: 1.2; }
-.soft-main h2 { margin: 0 0 10px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #8a8174; font-weight: 600; }
+.soft-main h1 { margin: 0 0 2px; font-size: 32px; line-height: 1.15; font-weight: var(--hd); }
+.brutal .soft-main h1 { text-transform: uppercase; font-size: 36px; }
+.soft-main h2 { margin: 0 0 10px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); font-weight: 700; }
+.brutal .soft-main h2 { display: inline-block; background: #000; color: #fff; padding: 2px 10px; }
 .soft-main p { margin: 0 0 8px; }
-.soft-role { color: #4a7c59; font-weight: 500; }
+.soft-role { color: var(--fg); font-weight: 600; }
 .soft-hero { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
-.soft-photo { width: 120px; height: 150px; object-fit: cover; object-position: 50% 12%; border-radius: 14px; filter: grayscale(1); }
+.soft-photo { width: 120px; height: 150px; object-fit: cover; object-position: 50% 12%; border: var(--bw) solid var(--bd); box-shadow: var(--sh); filter: grayscale(1); }
 .soft-facts { margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .soft-facts > div { display: flex; flex-wrap: wrap; gap: 2px 16px; }
-.soft-facts dt { min-width: 120px; color: #8a8174; }
+.soft-facts dt { min-width: 120px; color: var(--mut); font-weight: 600; }
 .soft-facts dd { margin: 0; flex: 1 1 240px; }
-.soft-card { background: #fff; border: 1px solid #ece6da; border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+.soft-card { background: var(--card); border: var(--bw) solid var(--bd); box-shadow: var(--sh); padding: 16px 18px; margin-bottom: 16px; }
 .soft-card-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; }
-.soft-card-top span { color: #8a8174; font-size: 14px; }
-.soft-org { color: #4a7c59; font-size: 14px; margin-bottom: 6px; }
+.soft-card-top span { color: var(--mut); font-size: 14px; }
+.soft-org { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
 .soft-card p { margin: 0; }
-.soft-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-.soft-btn { display: inline-block; padding: 10px 18px; border-radius: 999px; background: #4a7c59; color: #fff; text-decoration: none; font-size: 15px; }
-.soft-btn.alt { background: transparent; color: #4a7c59; border: 1px solid #4a7c59; }
-.soft-btn:hover { opacity: .88; }
-.soft-page :focus-visible { outline: 2px solid #4a7c59; outline-offset: 2px; }
+.soft-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.soft-btn { display: inline-block; padding: 10px 18px; border: var(--bw) solid var(--bd); background: var(--fg); color: var(--bg); text-decoration: none; font-size: 15px; font-weight: 600; box-shadow: var(--sh); }
+.brutal .soft-btn { background: var(--acc); color: #000; }
+.soft-btn.alt { background: var(--card); color: var(--fg); }
+.brutal .soft-btn:hover { transform: translate(3px, 3px); box-shadow: 3px 3px 0 #000; }
+.soft-page :focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }

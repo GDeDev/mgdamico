@@ -6,27 +6,31 @@ import type { FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from '
 import { COPY, EMAIL, GITHUB, LOGO } from '../data/content';
 import type { Lang } from '../data/content';
 import SoftView from './SoftView';
+import type { SiteTheme } from './SoftView';
 
 type View = 'boot' | 'main' | 'soft';
 type Entry = { id: number; cmd: string; extra?: string[] };
 
 const SECTIONS = ['about', 'experience', 'stack', 'learning', 'contact'];
-const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'soft', 'back', 'clear'];
+const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'minimal', 'brutal', 'soft', 'back', 'clear'];
 const MAX_ENTRIES = 4;
 
-const EXTRA: Record<Lang, { cmds: [string, string][]; soft: string; hint: string; user: string; empty: string; denied: string }> = {
+const EXTRA: Record<Lang, { cmds: [string, string][]; soft: string; hint: string; user: string; empty: string; denied: string; menuTitle: string; menu: [string, string, string][] }> = {
   es: {
     cmds: [
       ['ls', 'Lista las secciones.'],
       ['cd <sección>', 'Entra a una sección (cd .. vuelve al inicio).'],
       ['whoami', 'Quién es este usuario.'],
       ['history', 'Comandos que usaste.'],
-      ['soft', 'Cambia a la vista soft, más normal.'],
+      ['minimal', 'Abre el sitio minimalista.'],
+      ['brutal', 'Abre el sitio neo-brutalista.'],
       ['back', 'Vuelve a la pantalla de inicio.'],
     ],
-    soft: 'Vista soft',
+    soft: 'Sitio',
+    menuTitle: 'Elegí cómo querés ver el sitio:',
+    menu: [['1', 'Minimalista', 'limpio y simple'], ['2', 'Neo-brutalista', 'colores fuertes, bordes duros'], ['3', 'Consola', 'escribí comandos (o Enter)']],
     hint: 'Tab autocompleta · ↑ ↓ historial',
-    user: 'guest: visitante curioso. Probá "soft" para una vista más tranquila.',
+    user: 'guest: visitante curioso. Probá "minimal" o "brutal" para ver el sitio.',
     empty: 'Todavía no usaste comandos.',
     denied: 'Permiso denegado: este usuario no tiene sudo.',
   },
@@ -36,12 +40,15 @@ const EXTRA: Record<Lang, { cmds: [string, string][]; soft: string; hint: string
       ['cd <section>', 'Open a section (cd .. goes back to start).'],
       ['whoami', 'Who is this user.'],
       ['history', 'Commands you used.'],
-      ['soft', 'Switch to the softer, regular view.'],
+      ['minimal', 'Open the minimal site.'],
+      ['brutal', 'Open the neo-brutalist site.'],
       ['back', 'Back to the start screen.'],
     ],
-    soft: 'Soft view',
+    soft: 'Site',
+    menuTitle: 'Choose how you want to see the site:',
+    menu: [['1', 'Minimal', 'clean and simple'], ['2', 'Neo-brutalist', 'bold colors, hard borders'], ['3', 'Console', 'type commands (or Enter)']],
     hint: 'Tab autocompletes · ↑ ↓ history',
-    user: 'guest: curious visitor. Try "soft" for a calmer view.',
+    user: 'guest: curious visitor. Try "minimal" or "brutal" to see the site.',
     empty: 'No commands used yet.',
     denied: 'Permission denied: this user has no sudo.',
   },
@@ -181,6 +188,7 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
 export default function Terminal() {
   const [lang, setLang] = useState<Lang>('es');
   const [view, setView] = useState<View>('boot');
+  const [theme, setTheme] = useState<SiteTheme>('minimal');
   const [entries, setEntries] = useState<Entry[]>([{ id: 0, cmd: 'about' }]);
   const [value, setValue] = useState('');
 
@@ -203,14 +211,32 @@ export default function Terminal() {
   useEffect(() => {
     if (view !== 'boot') return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
+      const k = e.key.toLowerCase();
+      if (k === 'enter' || k === '3' || k === 'c') {
         e.preventDefault();
         enter();
+      } else if (k === '1' || k === 'a') {
+        setTheme('minimal');
+        setView('soft');
+      } else if (k === '2' || k === 'b') {
+        setTheme('brutal');
+        setView('soft');
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [view, enter]);
+
+  useEffect(() => {
+    if (view !== 'main') return;
+    inputRef.current?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+      if (document.activeElement !== inputRef.current) inputRef.current?.focus({ preventScroll: true });
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [view]);
 
   const run = (raw: string, fromChip = false) => {
     let cmd = raw.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -228,7 +254,8 @@ export default function Terminal() {
       setLang(cmd.slice(5) as Lang);
     } else if (cmd === 'exit' || cmd === 'back') {
       setView('boot');
-    } else if (cmd === 'soft') {
+    } else if (cmd === 'soft' || cmd === 'minimal' || cmd === 'brutal') {
+      if (cmd !== 'soft') setTheme(cmd);
       setView('soft');
     } else {
       const extra = cmd === 'history' ? [...history.current] : undefined;
@@ -270,7 +297,7 @@ export default function Terminal() {
   };
 
   if (view === 'soft') {
-    return <SoftView lang={lang} setLang={setLang} onConsole={() => setView('main')} />;
+    return <SoftView lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} onConsole={() => setView('main')} />;
   }
 
   return (
@@ -282,15 +309,18 @@ export default function Terminal() {
           <button className={`btn sq${lang === 'es' ? ' on' : ''}`} onClick={() => setLang('es')}>ES</button>
           <button className="btn" onClick={() => setView('soft')}>{EXTRA[lang].soft}</button>
           <a className="btn" href={`mailto:${EMAIL}`}>{c.contact}</a>
-          {view === 'boot' ? (
-            <button className="btn cta" onClick={enter}>{'> ' + c.enter}</button>
-          ) : (
+          {view === 'main' && (
             <button className="btn" onClick={() => setView('boot')}>{'< ' + c.back}</button>
           )}
         </div>
       </div>
 
-      <main className="body">
+      <main
+        className="body"
+        onClick={() => {
+          if (view === 'main' && !window.getSelection()?.toString()) inputRef.current?.focus({ preventScroll: true });
+        }}
+      >
         {view === 'boot' ? (
           <div className="stack" style={{ gap: 10 }}>
             <div>
@@ -307,9 +337,24 @@ export default function Terminal() {
                 <div key={l}>{l}</div>
               ))}
             </div>
-            <button className="pressbtn" onClick={enter}>
-              {c.press} <span className="cursor" />
-            </button>
+            <div className="dim">{EXTRA[lang].menuTitle}</div>
+            <div className="menu">
+              {EXTRA[lang].menu.map(([k, name, d], i) => (
+                <button
+                  key={k}
+                  onClick={() => {
+                    if (i === 2) enter();
+                    else {
+                      setTheme(i === 0 ? 'minimal' : 'brutal');
+                      setView('soft');
+                    }
+                  }}
+                >
+                  <b>[{k}]</b> {name} <span className="d">· {d}</span>
+                </button>
+              ))}
+              <span className="cursor" />
+            </div>
           </div>
         ) : (
           <>
