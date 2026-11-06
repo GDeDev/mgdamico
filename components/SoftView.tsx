@@ -4,39 +4,29 @@ import Image from 'next/image';
 import { COPY, EMAIL, GITHUB } from '../data/content';
 import type { Lang } from '../data/content';
 
-export type SiteTheme = 'minimal' | 'brutal';
-
 const LABELS = {
-  es: { console: 'Ir a la consola', minimal: 'Minimalista', brutal: 'Neo-brutalista', sections: ['Sobre mí', 'Experiencia', 'Stack', 'Formación', 'Contacto'] },
-  en: { console: 'Open console', minimal: 'Minimal', brutal: 'Neo-brutalist', sections: ['About', 'Experience', 'Stack', 'Learning', 'Contact'] },
+  es: { console: 'Ir a la consola', sections: ['Sobre mí', 'Experiencia', 'Stack', 'Formación', 'Contacto'] },
+  en: { console: 'Open console', sections: ['About', 'Experience', 'Stack', 'Learning', 'Contact'] },
 };
 
 export default function SoftView({
   lang,
   setLang,
-  theme,
-  setTheme,
   onConsole,
 }: {
   lang: Lang;
   setLang: (l: Lang) => void;
-  theme: SiteTheme;
-  setTheme: (t: SiteTheme) => void;
   onConsole: () => void;
 }) {
   const c = COPY[lang];
   const t = LABELS[lang];
 
   return (
-    <div className={`soft-page ${theme}`}>
+    <div className="soft-page">
       <header className="soft-top">
         <div className="soft-toggle">
           <button className={lang === 'en' ? 'on' : ''} onClick={() => setLang('en')}>EN</button>
           <button className={lang === 'es' ? 'on' : ''} onClick={() => setLang('es')}>ES</button>
-        </div>
-        <div className="soft-toggle">
-          <button className={theme === 'minimal' ? 'on' : ''} onClick={() => setTheme('minimal')}>{t.minimal}</button>
-          <button className={theme === 'brutal' ? 'on' : ''} onClick={() => setTheme('brutal')}>{t.brutal}</button>
         </div>
         <button className="soft-link" onClick={onConsole}>{'>_ ' + t.console}</button>
       </header>

@@ -6,33 +6,31 @@ import type { FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from '
 import { COPY, EMAIL, GITHUB, LOGO } from '../data/content';
 import type { Lang } from '../data/content';
 import SoftView from './SoftView';
-import type { SiteTheme } from './SoftView';
+import { CvLoader, Gate } from './Gate';
 
-type View = 'boot' | 'main' | 'soft';
+type View = 'gate' | 'loadConsole' | 'loadCv' | 'main' | 'soft';
 type Entry = { id: number; cmd: string; extra?: string[] };
 
 const SECTIONS = ['about', 'experience', 'stack', 'learning', 'contact'];
-const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'minimal', 'brutal', 'soft', 'back', 'clear'];
+const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'cv', 'back', 'clear'];
 const MAX_ENTRIES = 4;
 
-const EXTRA: Record<Lang, { cmds: [string, string][]; soft: string; hint: string; user: string; empty: string; denied: string; menuTitle: string; menu: [string, string, string][] }> = {
+const EXTRA: Record<Lang, { cmds: [string, string][]; cv: string; hint: string; user: string; empty: string; denied: string; load: string[] }> = {
   es: {
     cmds: [
       ['ls', 'Lista las secciones.'],
       ['cd <sección>', 'Entra a una sección (cd .. vuelve al inicio).'],
       ['whoami', 'Quién es este usuario.'],
       ['history', 'Comandos que usaste.'],
-      ['minimal', 'Abre el sitio minimalista.'],
-      ['brutal', 'Abre el sitio neo-brutalista.'],
-      ['back', 'Vuelve a la pantalla de inicio.'],
+      ['cv', 'Abre el CV minimalista.'],
+      ['back', 'Vuelve al inicio.'],
     ],
-    soft: 'Sitio',
-    menuTitle: 'Elegí cómo querés ver el sitio:',
-    menu: [['1', 'Minimalista', 'limpio y simple'], ['2', 'Neo-brutalista', 'colores fuertes, bordes duros'], ['3', 'Consola', 'escribí comandos (o Enter)']],
+    cv: 'CV',
     hint: 'Tab autocompleta · ↑ ↓ historial',
-    user: 'guest: visitante curioso. Probá "minimal" o "brutal" para ver el sitio.',
+    user: 'guest: visitante curioso. Probá "cv" para ver la versión minimalista.',
     empty: 'Todavía no usaste comandos.',
     denied: 'Permiso denegado: este usuario no tiene sudo.',
+    load: ['iniciando MDA terminal v1.0.0', 'cargando módulos', 'montando perfil de usuario'],
   },
   en: {
     cmds: [
@@ -40,17 +38,15 @@ const EXTRA: Record<Lang, { cmds: [string, string][]; soft: string; hint: string
       ['cd <section>', 'Open a section (cd .. goes back to start).'],
       ['whoami', 'Who is this user.'],
       ['history', 'Commands you used.'],
-      ['minimal', 'Open the minimal site.'],
-      ['brutal', 'Open the neo-brutalist site.'],
-      ['back', 'Back to the start screen.'],
+      ['cv', 'Open the minimal résumé.'],
+      ['back', 'Back to start.'],
     ],
-    soft: 'Site',
-    menuTitle: 'Choose how you want to see the site:',
-    menu: [['1', 'Minimal', 'clean and simple'], ['2', 'Neo-brutalist', 'bold colors, hard borders'], ['3', 'Console', 'type commands (or Enter)']],
+    cv: 'Résumé',
     hint: 'Tab autocompletes · ↑ ↓ history',
-    user: 'guest: curious visitor. Try "minimal" or "brutal" to see the site.',
+    user: 'guest: curious visitor. Try "cv" to see the minimal version.',
     empty: 'No commands used yet.',
     denied: 'Permission denied: this user has no sudo.',
+    load: ['starting MDA terminal v1.0.0', 'loading modules', 'mounting user profile'],
   },
 };
 
@@ -185,10 +181,67 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
   }
 }
 
+function EntryView({ en, lang }: { en: Entry; lang: Lang }) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setReady(true), 450);
+    return () => clearTimeout(id);
+  }, []);
+  return (
+    <div className="entry">
+      <Prompt cmd={en.cmd} />
+      {ready ? (
+        <div className="reveal">
+          <Output cmd={en.cmd} lang={lang} extra={en.extra} />
+        </div>
+      ) : (
+        <div className="loading">{lang === 'es' ? 'cargando' : 'loading'}</div>
+      )}
+    </div>
+  );
+}
+
+function ConsoleLoader({ lang, onDone }: { lang: Lang; onDone: () => void }) {
+  const lines = EXTRA[lang].load;
+  const [step, setStep] = useState(0);
+  const total = lines.length + 1;
+
+  useEffect(() => {
+    if (step >= total) {
+      const id = setTimeout(onDone, 350);
+      return () => clearTimeout(id);
+    }
+    const id = setTimeout(() => setStep((n) => n + 1), 420);
+    return () => clearTimeout(id);
+  }, [step, total, onDone]);
+
+  const pct = Math.min(100, Math.round((step / total) * 100));
+  const filled = Math.round(pct / 5);
+
+  return (
+    <div className="win">
+      <div className="bar">
+        <div className="title" aria-hidden="true">guest@mda: ~</div>
+      </div>
+      <main className="body" role="status">
+        <pre className="logo" aria-label="MDA">{LOGO}</pre>
+        <div className="boot-lines">
+          {lines.slice(0, step).map((l) => (
+            <div key={l}>
+              {'> ' + l + ' ... '}
+              <span className="ok">[ok]</span>
+            </div>
+          ))}
+        </div>
+        <div className="progress">{'[' + '█'.repeat(filled) + '░'.repeat(20 - filled) + '] ' + pct + '%'}</div>
+      </main>
+    </div>
+  );
+}
+
 export default function Terminal() {
   const [lang, setLang] = useState<Lang>('es');
-  const [view, setView] = useState<View>('boot');
-  const [theme, setTheme] = useState<SiteTheme>('minimal');
+  const [view, setView] = useState<View>('gate');
   const [entries, setEntries] = useState<Entry[]>([{ id: 0, cmd: 'about' }]);
   const [value, setValue] = useState('');
 
@@ -203,29 +256,13 @@ export default function Terminal() {
     setEntries([{ id: nextId.current++, cmd: 'about' }]);
     setView('main');
   }, []);
+  const goConsole = useCallback(() => setView('loadConsole'), []);
+  const goCv = useCallback(() => setView('loadCv'), []);
+  const showCv = useCallback(() => setView('soft'), []);
 
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
-
-  useEffect(() => {
-    if (view !== 'boot') return;
-    const onKey = (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase();
-      if (k === 'enter' || k === '3' || k === 'c') {
-        e.preventDefault();
-        enter();
-      } else if (k === '1' || k === 'a') {
-        setTheme('minimal');
-        setView('soft');
-      } else if (k === '2' || k === 'b') {
-        setTheme('brutal');
-        setView('soft');
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [view, enter]);
 
   useEffect(() => {
     if (view !== 'main') return;
@@ -253,10 +290,9 @@ export default function Terminal() {
     } else if (cmd === 'lang es' || cmd === 'lang en') {
       setLang(cmd.slice(5) as Lang);
     } else if (cmd === 'exit' || cmd === 'back') {
-      setView('boot');
-    } else if (cmd === 'soft' || cmd === 'minimal' || cmd === 'brutal') {
-      if (cmd !== 'soft') setTheme(cmd);
-      setView('soft');
+      setView('gate');
+    } else if (cmd === 'cv' || cmd === 'soft') {
+      setView('loadCv');
     } else {
       const extra = cmd === 'history' ? [...history.current] : undefined;
       setEntries((prev) => [...prev, { id: nextId.current++, cmd, extra }].slice(-MAX_ENTRIES));
@@ -296,8 +332,11 @@ export default function Terminal() {
     }
   };
 
+  if (view === 'gate') return <Gate lang={lang} setLang={setLang} onConsole={goConsole} onCv={goCv} />;
+  if (view === 'loadCv') return <CvLoader lang={lang} onDone={showCv} />;
+  if (view === 'loadConsole') return <ConsoleLoader lang={lang} onDone={enter} />;
   if (view === 'soft') {
-    return <SoftView lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} onConsole={() => setView('main')} />;
+    return <SoftView lang={lang} setLang={setLang} onConsole={goConsole} />;
   }
 
   return (
@@ -307,11 +346,9 @@ export default function Terminal() {
         <div className="ctrl">
           <button className={`btn sq${lang === 'en' ? ' on' : ''}`} onClick={() => setLang('en')}>EN</button>
           <button className={`btn sq${lang === 'es' ? ' on' : ''}`} onClick={() => setLang('es')}>ES</button>
-          <button className="btn" onClick={() => setView('soft')}>{EXTRA[lang].soft}</button>
+          <button className="btn" onClick={goCv}>{EXTRA[lang].cv}</button>
           <a className="btn" href={`mailto:${EMAIL}`}>{c.contact}</a>
-          {view === 'main' && (
-            <button className="btn" onClick={() => setView('boot')}>{'< ' + c.back}</button>
-          )}
+          <button className="btn" onClick={() => setView('gate')}>{'< ' + c.back}</button>
         </div>
       </div>
 
@@ -321,43 +358,7 @@ export default function Terminal() {
           if (view === 'main' && !window.getSelection()?.toString()) inputRef.current?.focus({ preventScroll: true });
         }}
       >
-        {view === 'boot' ? (
-          <div className="stack" style={{ gap: 10 }}>
-            <div>
-              <div>{c.welcome}</div>
-              <div className="dim">{c.hint1}</div>
-              <div className="dim">{c.hint2}</div>
-            </div>
-            <Prompt cmd="cat motd" />
-            <pre className="logo" aria-label="MDA">{LOGO}</pre>
-            <Prompt cmd="cat ethos.md" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <div className="w" style={{ fontWeight: 700 }}>{c.name}</div>
-              {c.ethos.map((l) => (
-                <div key={l}>{l}</div>
-              ))}
-            </div>
-            <div className="dim">{EXTRA[lang].menuTitle}</div>
-            <div className="menu">
-              {EXTRA[lang].menu.map(([k, name, d], i) => (
-                <button
-                  key={k}
-                  onClick={() => {
-                    if (i === 2) enter();
-                    else {
-                      setTheme(i === 0 ? 'minimal' : 'brutal');
-                      setView('soft');
-                    }
-                  }}
-                >
-                  <b>[{k}]</b> {name} <span className="d">· {d}</span>
-                </button>
-              ))}
-              <span className="cursor" />
-            </div>
-          </div>
-        ) : (
-          <>
+        <>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <div className="w" style={{ fontWeight: 700 }}>{c.name}</div>
               <div className="g" style={{ letterSpacing: 1 }}>{c.role}</div>
@@ -373,10 +374,7 @@ export default function Terminal() {
 
             <div id="out" className="stack" aria-live="polite">
               {entries.map((en) => (
-                <div className="entry" key={en.id}>
-                  <Prompt cmd={en.cmd} />
-                  <Output cmd={en.cmd} lang={lang} extra={en.extra} />
-                </div>
+                <EntryView key={en.id} en={en} lang={lang} />
               ))}
             </div>
 
@@ -396,8 +394,7 @@ export default function Terminal() {
                 aria-label={c.placeholder}
               />
             </form>
-          </>
-        )}
+        </>
       </main>
     </div>
   );
