@@ -19,7 +19,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 1px solid 
 .btn:hover { color: #5dff6a; }
 .btn.on, .btn.cta { color: #5dff6a; }
 
-.body { flex: 1; min-height: 0; padding: 12px 14px; overflow: hidden auto; display: flex; flex-direction: column; gap: 10px; }
+.body { flex: 1; min-height: 0; padding: 12px 14px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
 .g { color: #5dff6a; }
 .dim { color: #8fb59a; }
 .soft { color: #b6d3bd; }
@@ -41,7 +41,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 1px solid 
 .prompt { color: #5dff6a; white-space: pre-wrap; word-break: break-word; }
 .prompt .p { color: #8fb59a; }
 .prompt .c { color: #d3ecd8; }
-.entry { display: flex; flex-direction: column; gap: 6px; }
+.entry { display: flex; flex-direction: column; gap: 6px; flex: none; }
+#out { flex: 1; min-height: 0; overflow: hidden; justify-content: flex-end; }
 
 form { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 4px; }
 form label { white-space: nowrap; color: #5dff6a; }
@@ -52,3 +53,35 @@ form input:focus-visible { outline: none; }
 .about { display: flex; gap: 14px; align-items: flex-start; }
 .about > div { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .pressbtn { background: transparent; border: 0; color: #5dff6a; font-size: 13px; min-height: 28px; padding: 0; cursor: pointer; text-align: left; }
+
+/* soft view */
+.soft-page { height: 100dvh; overflow-y: auto; scrollbar-width: thin; background: #faf8f4; color: #2a2723; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.65; }
+.soft-page::-webkit-scrollbar { display: block; width: 8px; }
+.soft-page::-webkit-scrollbar-thumb { background: #d8d2c6; border-radius: 4px; }
+.soft-top { max-width: 760px; margin: 0 auto; padding: 16px 20px 0; display: flex; justify-content: space-between; align-items: center; }
+.soft-toggle { display: inline-flex; background: #efeae0; border-radius: 999px; padding: 3px; }
+.soft-toggle button { border: 0; background: transparent; color: #6b645a; font: inherit; font-size: 13px; padding: 4px 14px; border-radius: 999px; cursor: pointer; }
+.soft-toggle button.on { background: #fff; color: #2a2723; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.soft-link { border: 0; background: transparent; color: #4a7c59; font: inherit; font-size: 14px; cursor: pointer; padding: 6px 4px; }
+.soft-link:hover { text-decoration: underline; }
+.soft-main { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; display: flex; flex-direction: column; gap: 36px; }
+.soft-main h1 { margin: 0 0 2px; font-size: 30px; line-height: 1.2; }
+.soft-main h2 { margin: 0 0 10px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #8a8174; font-weight: 600; }
+.soft-main p { margin: 0 0 8px; }
+.soft-role { color: #4a7c59; font-weight: 500; }
+.soft-hero { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.soft-photo { width: 120px; height: 150px; object-fit: cover; object-position: 50% 12%; border-radius: 14px; filter: grayscale(1); }
+.soft-facts { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.soft-facts > div { display: flex; flex-wrap: wrap; gap: 2px 16px; }
+.soft-facts dt { min-width: 120px; color: #8a8174; }
+.soft-facts dd { margin: 0; flex: 1 1 240px; }
+.soft-card { background: #fff; border: 1px solid #ece6da; border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+.soft-card-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; }
+.soft-card-top span { color: #8a8174; font-size: 14px; }
+.soft-org { color: #4a7c59; font-size: 14px; margin-bottom: 6px; }
+.soft-card p { margin: 0; }
+.soft-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.soft-btn { display: inline-block; padding: 10px 18px; border-radius: 999px; background: #4a7c59; color: #fff; text-decoration: none; font-size: 15px; }
+.soft-btn.alt { background: transparent; color: #4a7c59; border: 1px solid #4a7c59; }
+.soft-btn:hover { opacity: .88; }
+.soft-page :focus-visible { outline: 2px solid #4a7c59; outline-offset: 2px; }

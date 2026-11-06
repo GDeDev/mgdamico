@@ -5,9 +5,47 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { COPY, EMAIL, GITHUB, LOGO } from '../data/content';
 import type { Lang } from '../data/content';
+import SoftView from './SoftView';
 
-type View = 'boot' | 'main';
-type Entry = { id: number; cmd: string };
+type View = 'boot' | 'main' | 'soft';
+type Entry = { id: number; cmd: string; extra?: string[] };
+
+const SECTIONS = ['about', 'experience', 'stack', 'learning', 'contact'];
+const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'soft', 'back', 'clear'];
+const MAX_ENTRIES = 4;
+
+const EXTRA: Record<Lang, { cmds: [string, string][]; soft: string; hint: string; user: string; empty: string; denied: string }> = {
+  es: {
+    cmds: [
+      ['ls', 'Lista las secciones.'],
+      ['cd <sección>', 'Entra a una sección (cd .. vuelve al inicio).'],
+      ['whoami', 'Quién es este usuario.'],
+      ['history', 'Comandos que usaste.'],
+      ['soft', 'Cambia a la vista soft, más normal.'],
+      ['back', 'Vuelve a la pantalla de inicio.'],
+    ],
+    soft: 'Vista soft',
+    hint: 'Tab autocompleta · ↑ ↓ historial',
+    user: 'guest: visitante curioso. Probá "soft" para una vista más tranquila.',
+    empty: 'Todavía no usaste comandos.',
+    denied: 'Permiso denegado: este usuario no tiene sudo.',
+  },
+  en: {
+    cmds: [
+      ['ls', 'List the sections.'],
+      ['cd <section>', 'Open a section (cd .. goes back to start).'],
+      ['whoami', 'Who is this user.'],
+      ['history', 'Commands you used.'],
+      ['soft', 'Switch to the softer, regular view.'],
+      ['back', 'Back to the start screen.'],
+    ],
+    soft: 'Soft view',
+    hint: 'Tab autocompletes · ↑ ↓ history',
+    user: 'guest: curious visitor. Try "soft" for a calmer view.',
+    empty: 'No commands used yet.',
+    denied: 'Permission denied: this user has no sudo.',
+  },
+};
 
 function Row({ k, children }: { k: string; children: ReactNode }) {
   return (
@@ -28,17 +66,42 @@ function Prompt({ cmd }: { cmd: string }) {
   );
 }
 
-function Output({ cmd, lang }: { cmd: string; lang: Lang }) {
+function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[] }) {
   const c = COPY[lang];
+  const x = EXTRA[lang];
+
+  if (cmd.startsWith('sudo')) return <div className="soft">{x.denied}</div>;
 
   switch (cmd) {
     case 'help':
       return (
-        <div className="stack" style={{ gap: 8 }}>
-          {c.cmds.map(([k, v]) => (
+        <div className="stack" style={{ gap: 4 }}>
+          {c.cmds.filter(([k]) => k !== 'clear').map(([k, v]) => (
             <Row key={k} k={k}>{v}</Row>
           ))}
+          {x.cmds.map(([k, v]) => (
+            <Row key={k} k={k}>{v}</Row>
+          ))}
+          <Row k="clear">{c.cmds.find(([k]) => k === 'clear')?.[1] ?? ''}</Row>
+          <div className="dim">{x.hint}</div>
         </div>
+      );
+    case 'ls':
+      return <div className="g">{SECTIONS.map((s) => s + '/').join('   ')}</div>;
+    case 'whoami':
+      return <div className="soft">{x.user}</div>;
+    case 'history':
+      return extra && extra.length ? (
+        <div className="stack" style={{ gap: 0 }}>
+          {extra.map((h, i) => (
+            <div key={i}>
+              <span className="dim">{String(i + 1).padStart(2, ' ')}  </span>
+              {h}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="dim">{x.empty}</div>
       );
     case 'about':
       return (
@@ -150,11 +213,14 @@ export default function Terminal() {
   }, [view, enter]);
 
   const run = (raw: string, fromChip = false) => {
-    const cmd = raw.trim().toLowerCase();
+    let cmd = raw.trim().toLowerCase().replace(/\s+/g, ' ');
     if (!cmd) return;
 
     history.current.push(cmd);
     hIndex.current = history.current.length;
+
+    if (cmd === 'cd' || cmd === 'cd ..' || cmd === 'cd ~') cmd = 'back';
+    else if (cmd.startsWith('cd ')) cmd = cmd.slice(3).replace(/\/$/, '');
 
     if (cmd === 'clear') {
       setEntries([]);
@@ -162,8 +228,11 @@ export default function Terminal() {
       setLang(cmd.slice(5) as Lang);
     } else if (cmd === 'exit' || cmd === 'back') {
       setView('boot');
+    } else if (cmd === 'soft') {
+      setView('soft');
     } else {
-      setEntries([{ id: nextId.current++, cmd }]);
+      const extra = cmd === 'history' ? [...history.current] : undefined;
+      setEntries((prev) => [...prev, { id: nextId.current++, cmd, extra }].slice(-MAX_ENTRIES));
     }
 
     if (!fromChip) inputRef.current?.focus({ preventScroll: true });
@@ -178,6 +247,16 @@ export default function Terminal() {
 
   const onKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
     const h = history.current;
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const v = value.trim().toLowerCase();
+      if (!v) return;
+      const prefix = v.startsWith('cd ') ? 'cd ' : '';
+      const pool = prefix ? SECTIONS : COMMANDS;
+      const matches = pool.filter((k) => k.startsWith(v.slice(prefix.length)));
+      if (matches.length === 1) setValue(prefix + matches[0]);
+      return;
+    }
     if (!h.length) return;
     if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -190,6 +269,10 @@ export default function Terminal() {
     }
   };
 
+  if (view === 'soft') {
+    return <SoftView lang={lang} setLang={setLang} onConsole={() => setView('main')} />;
+  }
+
   return (
     <div className="win">
       <div className="bar">
@@ -197,6 +280,7 @@ export default function Terminal() {
         <div className="ctrl">
           <button className={`btn sq${lang === 'en' ? ' on' : ''}`} onClick={() => setLang('en')}>EN</button>
           <button className={`btn sq${lang === 'es' ? ' on' : ''}`} onClick={() => setLang('es')}>ES</button>
+          <button className="btn" onClick={() => setView('soft')}>{EXTRA[lang].soft}</button>
           <a className="btn" href={`mailto:${EMAIL}`}>{c.contact}</a>
           {view === 'boot' ? (
             <button className="btn cta" onClick={enter}>{'> ' + c.enter}</button>
@@ -246,7 +330,7 @@ export default function Terminal() {
               {entries.map((en) => (
                 <div className="entry" key={en.id}>
                   <Prompt cmd={en.cmd} />
-                  <Output cmd={en.cmd} lang={lang} />
+                  <Output cmd={en.cmd} lang={lang} extra={en.extra} />
                 </div>
               ))}
             </div>
