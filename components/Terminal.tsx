@@ -12,10 +12,51 @@ type View = 'gate' | 'loadConsole' | 'loadCv' | 'main' | 'soft';
 type Entry = { id: number; cmd: string; extra?: string[] };
 
 const SECTIONS = ['about', 'experience', 'stack', 'learning', 'contact'];
-const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'cv', 'back', 'clear'];
+const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'neofetch', 'hello', 'pwd', 'date', 'uname', 'coffee', 'cv', 'back', 'clear'];
 const MAX_ENTRIES = 4;
 
-const EXTRA: Record<Lang, { cmds: [string, string][]; cv: string; hint: string; user: string; empty: string; denied: string; load: string[] }> = {
+const ALIASES: Record<string, string> = {
+  '?': 'help', h: 'help', ayuda: 'help',
+  '1': 'about', sobre: 'about', 'sobre mi': 'about', 'sobre mí': 'about', acerca: 'about', quien: 'about', info: 'about',
+  '2': 'experience', experiencia: 'experience', exp: 'experience', trabajo: 'experience', work: 'experience',
+  '3': 'stack', skills: 'stack', tech: 'stack', tecnologias: 'stack', tecnologías: 'stack',
+  '4': 'learning', formacion: 'learning', formación: 'learning', estudios: 'learning', cursos: 'learning', aprendizaje: 'learning', education: 'learning',
+  '5': 'contact', contacto: 'contact', mail: 'contact', email: 'contact', github: 'contact',
+  historia: 'history', historial: 'history',
+  limpiar: 'clear', cls: 'clear',
+  inicio: 'back', home: 'back', salir: 'exit',
+  resume: 'cv', curriculum: 'cv', 'ver cv': 'cv',
+  hola: 'hello', hi: 'hello', hey: 'hello',
+  cafe: 'coffee', café: 'coffee',
+  fetch: 'neofetch',
+};
+const FUN = ['hello', 'neofetch', 'pwd', 'date', 'uname', 'coffee', 'echo', 'motd', 'ethos'];
+const KNOWN = [...COMMANDS, ...FUN, 'exit', ...Object.keys(ALIASES).filter((k) => /^[a-zñáéíóú]{3,}$/.test(k))];
+const COFFEE = ['  ( (', '   ) )', ' .______.', ' |      |]', ' \\      /', "  `----'"].join('\n');
+
+function distance(a: string, b: string) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+
+function suggest(word: string) {
+  let best = '';
+  let bestD = 3;
+  for (const k of KNOWN) {
+    const dist = distance(word, k);
+    if (dist < bestD) {
+      bestD = dist;
+      best = ALIASES[k] ?? k;
+    }
+  }
+  return best;
+}
+
+const EXTRA: Record<Lang, { cmds: [string, string][]; cv: string; hint: string; user: string; empty: string; denied: string; load: string[]; more: string; hello: string; coffee: string; didyou: string; langset: string; os: string }> = {
   es: {
     cmds: [
       ['ls', 'Lista las secciones.'],
@@ -31,6 +72,12 @@ const EXTRA: Record<Lang, { cmds: [string, string][]; cv: string; hint: string; 
     empty: 'Todavía no usaste comandos.',
     denied: 'Permiso denegado: este usuario no tiene sudo.',
     load: ['iniciando MDA terminal v1.0.0', 'cargando módulos', 'montando perfil de usuario'],
+    more: 'Más: hello · neofetch · pwd · date · uname · coffee · echo · cat <archivo>. También 1-5 y alias en español (ayuda, experiencia, contacto...).',
+    hello: '¡Hola! Soy Marco. Escribí "about" para conocerme o "contact" para hablar.',
+    coffee: 'Café listo. Ahora a escribir código.',
+    didyou: '¿Quisiste decir',
+    langset: 'idioma: español',
+    os: 'OS',
   },
   en: {
     cmds: [
@@ -47,6 +94,12 @@ const EXTRA: Record<Lang, { cmds: [string, string][]; cv: string; hint: string; 
     empty: 'No commands used yet.',
     denied: 'Permission denied: this user has no sudo.',
     load: ['starting MDA terminal v1.0.0', 'loading modules', 'mounting user profile'],
+    more: 'More: hello · neofetch · pwd · date · uname · coffee · echo · cat <file>. Also 1-5 and Spanish aliases.',
+    hello: 'Hi! I am Marco. Type "about" to get to know me or "contact" to talk.',
+    coffee: 'Coffee ready. Time to write some code.',
+    didyou: 'Did you mean',
+    langset: 'language: English',
+    os: 'OS',
   },
 };
 
@@ -74,6 +127,8 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
   const x = EXTRA[lang];
 
   if (cmd.startsWith('sudo')) return <div className="soft">{x.denied}</div>;
+  if (cmd.startsWith('echo')) return <div>{extra?.[0] ?? ''}</div>;
+  if (cmd.startsWith('lang ')) return <div className="soft">{x.langset}</div>;
 
   switch (cmd) {
     case 'help':
@@ -87,10 +142,53 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
           ))}
           <Row k="clear">{c.cmds.find(([k]) => k === 'clear')?.[1] ?? ''}</Row>
           <div className="dim">{x.hint}</div>
+          <div className="dim">{x.more}</div>
+        </div>
+      );
+    case 'hello':
+      return <div className="soft">{x.hello}</div>;
+    case 'pwd':
+      return <div>/home/guest/portfolio</div>;
+    case 'date':
+      return <div>{new Date().toLocaleString(lang === 'es' ? 'es-AR' : 'en-US', { dateStyle: 'full', timeStyle: 'short' })}</div>;
+    case 'uname':
+      return <div>MDA Terminal 1.0.0 (Next.js) web</div>;
+    case 'motd':
+      return <pre className="logo" aria-label="MDA">{LOGO}</pre>;
+    case 'ethos':
+      return (
+        <div className="stack" style={{ gap: 1 }}>
+          <div className="w" style={{ fontWeight: 700 }}>{c.name}</div>
+          {c.ethos.map((l) => (
+            <div key={l}>{l}</div>
+          ))}
+        </div>
+      );
+    case 'neofetch':
+      return (
+        <div className="fetch">
+          <pre className="logo" aria-label="MDA">{LOGO}</pre>
+          <div className="stack" style={{ gap: 0 }}>
+            <div className="g">guest@mda</div>
+            <div className="dim">-----------</div>
+            <Row k={x.os}>MDA Terminal 1.0.0</Row>
+            <Row k="role">{c.role}</Row>
+            {c.facts.map(([k, v]) => (
+              <Row key={k} k={k}>{v}</Row>
+            ))}
+            <Row k="email">{EMAIL}</Row>
+          </div>
+        </div>
+      );
+    case 'coffee':
+      return (
+        <div className="stack" style={{ gap: 4 }}>
+          <pre className="logo" aria-hidden="true">{COFFEE}</pre>
+          <div className="soft">{x.coffee}</div>
         </div>
       );
     case 'ls':
-      return <div className="g">{SECTIONS.map((s) => s + '/').join('   ')}</div>;
+      return <div className="g">{SECTIONS.map((s, i) => `${i + 1} ${s}/`).join('   ')}</div>;
     case 'whoami':
       return <div className="soft">{x.user}</div>;
     case 'history':
@@ -176,6 +274,11 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
         <div className="soft">
           {c.notfound}
           {cmd}. {c.tryhelp}
+          {extra?.[0] ? (
+            <div>
+              {x.didyou} <span className="g">{extra[0]}</span>?
+            </div>
+          ) : null}
         </div>
       );
   }
@@ -284,17 +387,29 @@ export default function Terminal() {
 
     if (cmd === 'cd' || cmd === 'cd ..' || cmd === 'cd ~') cmd = 'back';
     else if (cmd.startsWith('cd ')) cmd = cmd.slice(3).replace(/\/$/, '');
+    else if (cmd.startsWith('cat ')) cmd = cmd.slice(4).replace(/\.(md|txt)$/, '');
+    cmd = ALIASES[cmd] ?? cmd;
 
     if (cmd === 'clear') {
       setEntries([]);
     } else if (cmd === 'lang es' || cmd === 'lang en') {
       setLang(cmd.slice(5) as Lang);
+      setEntries((prev) => [...prev, { id: nextId.current++, cmd }].slice(-MAX_ENTRIES));
     } else if (cmd === 'exit' || cmd === 'back') {
       setView('gate');
     } else if (cmd === 'cv' || cmd === 'soft') {
       setView('loadCv');
     } else {
-      const extra = cmd === 'history' ? [...history.current] : undefined;
+      const word = cmd.split(' ')[0];
+      const known = KNOWN.includes(word) || cmd.startsWith('sudo');
+      const extra =
+        cmd === 'history'
+          ? [...history.current]
+          : word === 'echo'
+            ? [raw.trim().slice(4).trim()]
+            : known
+              ? undefined
+              : [suggest(word)].filter(Boolean);
       setEntries((prev) => [...prev, { id: nextId.current++, cmd, extra }].slice(-MAX_ENTRIES));
     }
 

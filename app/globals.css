@@ -117,3 +117,5 @@ form input:focus-visible { outline: none; }
 .soft-btn.alt { background: transparent; color: var(--fg); }
 .soft-btn:hover { opacity: .85; }
 .soft-page :focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+.fetch { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
