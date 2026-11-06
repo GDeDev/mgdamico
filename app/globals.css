@@ -71,6 +71,10 @@ form input:focus-visible { outline: none; }
 .gate-opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; animation: rise .7s .15s ease-out both; }
 .gate-opts button { font: inherit; font-size: 15px; min-width: 140px; padding: 12px 22px; border: 1px solid #111; background: #fff; color: #111; cursor: pointer; transition: background .15s, color .15s; }
 .gate-opts button:hover, .gate-opts button:focus-visible { background: #111; color: #fff; outline: none; }
+.gate-opts .us { color: #00b341; font-weight: 700; margin-left: 1px; animation: blink 1.1s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .gate-opts .us { animation: none; } }
+/* 16px+ inputs stop iOS from zooming the page on focus */
+@media (max-width: 768px) { form input { font-size: 16px; } }
 .gate-lang { position: absolute; top: 16px; right: 16px; display: flex; gap: 4px; }
 .gate-lang button { border: 0; background: transparent; font: inherit; font-size: 13px; color: #999; cursor: pointer; padding: 4px 6px; }
 .gate-lang button.on { color: #111; text-decoration: underline; }

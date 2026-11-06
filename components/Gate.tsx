@@ -40,7 +40,10 @@ export function Gate({
       </div>
       <h1>{t.question}</h1>
       <div className="gate-opts">
-        <button onClick={onConsole}>{t.console}</button>
+        <button onClick={onConsole}>
+          {t.console}
+          <span className="us" aria-hidden="true">_</span>
+        </button>
         <button onClick={onCv}>{t.cv}</button>
       </div>
     </div>
