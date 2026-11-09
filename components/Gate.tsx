@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
+import { COPY as PROFILE } from '../data/content';
 import type { Lang } from '../data/content';
 
 const COPY = {
-  es: { question: '¿Cómo querés conocerme?', console: 'Consola', cv: 'CV', loading: 'Cargando' },
-  en: { question: 'How would you like to get to know me?', console: 'Console', cv: 'Résumé', loading: 'Loading' },
+  es: { question: '¿Cómo querés conocerme?', console: 'Consola', cv: 'CV' },
+  en: { question: 'How would you like to get to know me?', console: 'Console', cv: 'Résumé' },
 };
 
 export function Gate({
@@ -35,31 +36,19 @@ export function Gate({
   return (
     <div className="gate">
       <div className="gate-lang">
-        <button className={lang === 'en' ? 'on' : ''} onClick={() => setLang('en')}>EN</button>
-        <button className={lang === 'es' ? 'on' : ''} onClick={() => setLang('es')}>ES</button>
+        <button className={lang === 'en' ? 'on' : ''} aria-pressed={lang === 'en'} onClick={() => setLang('en')}>EN</button>
+        <button className={lang === 'es' ? 'on' : ''} aria-pressed={lang === 'es'} onClick={() => setLang('es')}>ES</button>
       </div>
-      <h1>{t.question}</h1>
+      <h1>{PROFILE[lang].name}</h1>
+      <p className="gate-role">{PROFILE[lang].role}</p>
+      <p className="gate-question">{t.question}</p>
       <div className="gate-opts">
-        <button onClick={onConsole}>
+        <button onClick={onConsole} aria-keyshortcuts="1 C">
           {t.console}
           <span className="us" aria-hidden="true">_</span>
         </button>
-        <button onClick={onCv}>{t.cv}</button>
+        <button onClick={onCv} aria-keyshortcuts="2 V R">{t.cv}</button>
       </div>
-    </div>
-  );
-}
-
-export function CvLoader({ lang, onDone }: { lang: Lang; onDone: () => void }) {
-  useEffect(() => {
-    const id = setTimeout(onDone, 1400);
-    return () => clearTimeout(id);
-  }, [onDone]);
-
-  return (
-    <div className="gate cv-loader" role="status">
-      <div className="cv-bar"><i /></div>
-      <span>{COPY[lang].loading}</span>
     </div>
   );
 }

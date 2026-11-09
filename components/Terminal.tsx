@@ -1,36 +1,41 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
-import { COPY, EMAIL, GITHUB, LOGO } from '../data/content';
+import { COPY, EMAIL, GITHUB, LOGO, cvPdf } from '../data/content';
 import type { Lang } from '../data/content';
-import SoftView from './SoftView';
-import { CvLoader, Gate } from './Gate';
+import { BLOG_ENABLED } from '../data/blog';
+import { Gate } from './Gate';
 
-type View = 'gate' | 'loadConsole' | 'loadCv' | 'main' | 'soft';
+type View = 'gate' | 'loadConsole' | 'main';
 type Entry = { id: number; cmd: string; extra?: string[] };
 
-const SECTIONS = ['about', 'experience', 'stack', 'learning', 'contact'];
-const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'neofetch', 'hello', 'pwd', 'date', 'uname', 'coffee', 'cv', 'back', 'clear'];
+const SECTIONS = ['about', 'experience', 'projects', 'stack', 'learning', 'contact'];
+const COMMANDS = ['help', ...SECTIONS, 'ls', 'whoami', 'history', 'neofetch', 'hello', 'pwd', 'date', 'uname', 'coffee', 'cv', 'pdf', ...(BLOG_ENABLED ? ['blog'] : []), 'back', 'clear'];
 const MAX_ENTRIES = 4;
 
 const ALIASES: Record<string, string> = {
   '?': 'help', h: 'help', ayuda: 'help',
   '1': 'about', sobre: 'about', 'sobre mi': 'about', 'sobre mí': 'about', acerca: 'about', quien: 'about', info: 'about',
   '2': 'experience', experiencia: 'experience', exp: 'experience', trabajo: 'experience', work: 'experience',
-  '3': 'stack', skills: 'stack', tech: 'stack', tecnologias: 'stack', tecnologías: 'stack',
-  '4': 'learning', formacion: 'learning', formación: 'learning', estudios: 'learning', cursos: 'learning', aprendizaje: 'learning', education: 'learning',
-  '5': 'contact', contacto: 'contact', mail: 'contact', email: 'contact', github: 'contact',
+  '3': 'projects', proyectos: 'projects', portfolio: 'projects',
+  '4': 'stack', skills: 'stack', tech: 'stack', tecnologias: 'stack', tecnologías: 'stack',
+  '5': 'learning', formacion: 'learning', formación: 'learning', estudios: 'learning', cursos: 'learning', aprendizaje: 'learning', education: 'learning',
+  '6': 'contact', contacto: 'contact', mail: 'contact', email: 'contact', github: 'contact',
   historia: 'history', historial: 'history',
   limpiar: 'clear', cls: 'clear',
   inicio: 'back', home: 'back', salir: 'exit',
   resume: 'cv', curriculum: 'cv', 'ver cv': 'cv',
+  download: 'pdf', descargar: 'pdf', imprimir: 'pdf', print: 'pdf',
   hola: 'hello', hi: 'hello', hey: 'hello',
+  campeón: 'campeon', champion: 'campeon', '2022': 'campeon',
   cafe: 'coffee', café: 'coffee',
   fetch: 'neofetch',
+  ...(BLOG_ENABLED ? { notas: 'blog', posts: 'blog', articulos: 'blog', artículos: 'blog' } : {}),
 };
-const FUN = ['hello', 'neofetch', 'pwd', 'date', 'uname', 'coffee', 'echo', 'motd', 'ethos'];
+const FUN = ['hello', 'neofetch', 'pwd', 'date', 'uname', 'coffee', 'echo', 'motd', 'ethos', 'campeon'];
 const KNOWN = [...COMMANDS, ...FUN, 'exit', ...Object.keys(ALIASES).filter((k) => /^[a-zñáéíóú]{3,}$/.test(k))];
 const COFFEE = ['  ( (', '   ) )', ' .______.', ' |      |]', ' \\      /', "  `----'"].join('\n');
 
@@ -56,28 +61,33 @@ function suggest(word: string) {
   return best;
 }
 
-const EXTRA: Record<Lang, { cmds: [string, string][]; cv: string; hint: string; user: string; empty: string; denied: string; load: string[]; more: string; hello: string; coffee: string; didyou: string; langset: string; os: string }> = {
+const EXTRA: Record<Lang, { cmds: [string, string][]; cv: string; hint: string; user: string; empty: string; denied: string; load: string[]; more: string; hello: string; coffee: string; didyou: string; langset: string; pdfMsg: string; os: string; full: string }> = {
   es: {
     cmds: [
       ['ls', 'Lista las secciones.'],
       ['cd <sección>', 'Entra a una sección (cd .. vuelve al inicio).'],
       ['whoami', 'Quién es este usuario.'],
       ['history', 'Comandos que usaste.'],
-      ['cv', 'Abre el CV minimalista.'],
+      ['cv', 'Abre el CV completo.'],
+      ['pdf', 'Descarga el CV en PDF.'],
+      ...(BLOG_ENABLED ? [['blog', 'Abre el blog.'] as [string, string]] : []),
+      ['lang es|en', 'Cambia el idioma.'],
       ['back', 'Vuelve al inicio.'],
     ],
     cv: 'CV',
     hint: 'Tab autocompleta · ↑ ↓ historial',
-    user: 'guest: visitante curioso. Probá "cv" para ver la versión minimalista.',
+    user: 'guest: visitante curioso. Probá "cv" para ver el CV completo o "pdf" para descargarlo.',
     empty: 'Todavía no usaste comandos.',
     denied: 'Permiso denegado: este usuario no tiene sudo.',
-    load: ['iniciando MDA terminal v1.0.0', 'cargando módulos', 'montando perfil de usuario'],
-    more: 'Más: hello · neofetch · pwd · date · uname · coffee · echo · cat <archivo>. También 1-5 y alias en español (ayuda, experiencia, contacto...).',
+    load: ['iniciando MDA terminal v1.1.0', 'cargando módulos', 'montando perfil de usuario'],
+    more: 'Más: hello · neofetch · pwd · date · uname · coffee · echo · cat <archivo>. También 1-6 y alias en español (ayuda, experiencia, contacto...).',
     hello: '¡Hola! Soy Marco. Escribí "about" para conocerme o "contact" para hablar.',
     coffee: 'Café listo. Ahora a escribir código.',
     didyou: '¿Quisiste decir',
     langset: 'idioma: español',
+    pdfMsg: 'Descargando CV en PDF…',
     os: 'OS',
+    full: 'Detalle completo: escribí "cv" (o "pdf" para descargarlo).',
   },
   en: {
     cmds: [
@@ -85,21 +95,26 @@ const EXTRA: Record<Lang, { cmds: [string, string][]; cv: string; hint: string; 
       ['cd <section>', 'Open a section (cd .. goes back to start).'],
       ['whoami', 'Who is this user.'],
       ['history', 'Commands you used.'],
-      ['cv', 'Open the minimal résumé.'],
+      ['cv', 'Open the full résumé.'],
+      ['pdf', 'Download the résumé as PDF.'],
+      ...(BLOG_ENABLED ? [['blog', 'Open the blog.'] as [string, string]] : []),
+      ['lang es|en', 'Change the language.'],
       ['back', 'Back to start.'],
     ],
     cv: 'Résumé',
     hint: 'Tab autocompletes · ↑ ↓ history',
-    user: 'guest: curious visitor. Try "cv" to see the minimal version.',
+    user: 'guest: curious visitor. Try "cv" for the full résumé or "pdf" to download it.',
     empty: 'No commands used yet.',
     denied: 'Permission denied: this user has no sudo.',
-    load: ['starting MDA terminal v1.0.0', 'loading modules', 'mounting user profile'],
-    more: 'More: hello · neofetch · pwd · date · uname · coffee · echo · cat <file>. Also 1-5 and Spanish aliases.',
+    load: ['starting MDA terminal v1.1.0', 'loading modules', 'mounting user profile'],
+    more: 'More: hello · neofetch · pwd · date · uname · coffee · echo · cat <file>. Also 1-6 and Spanish aliases.',
     hello: 'Hi! I am Marco. Type "about" to get to know me or "contact" to talk.',
     coffee: 'Coffee ready. Time to write some code.',
     didyou: 'Did you mean',
     langset: 'language: English',
+    pdfMsg: 'Downloading résumé as PDF…',
     os: 'OS',
+    full: 'Full details: type "cv" (or "pdf" to download it).',
   },
 };
 
@@ -145,6 +160,10 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
           <div className="dim">{x.more}</div>
         </div>
       );
+    case 'pdf':
+      return <div className="soft">{x.pdfMsg}</div>;
+    case 'campeon':
+      return <div className="soft">{lang === 'es' ? '⭐⭐⭐ Campeón del mundo 2022. Y seguimos.' : '⭐⭐⭐ World Cup 2022 champion. And counting.'}</div>;
     case 'hello':
       return <div className="soft">{x.hello}</div>;
     case 'pwd':
@@ -152,7 +171,7 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
     case 'date':
       return <div>{new Date().toLocaleString(lang === 'es' ? 'es-AR' : 'en-US', { dateStyle: 'full', timeStyle: 'short' })}</div>;
     case 'uname':
-      return <div>MDA Terminal 1.0.0 (Next.js) web</div>;
+      return <div>MDA Terminal 1.1.0 (Next.js) web</div>;
     case 'motd':
       return <pre className="logo" aria-label="MDA">{LOGO}</pre>;
     case 'ethos':
@@ -171,7 +190,7 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
           <div className="stack" style={{ gap: 0 }}>
             <div className="g">guest@mda</div>
             <div className="dim">-----------</div>
-            <Row k={x.os}>MDA Terminal 1.0.0</Row>
+            <Row k={x.os}>MDA Terminal 1.1.0</Row>
             <Row k="role">{c.role}</Row>
             {c.facts.map(([k, v]) => (
               <Row key={k} k={k}>{v}</Row>
@@ -213,7 +232,7 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
             alt="Foto de Marco Giuliano D'Amico"
             width={84}
             height={105}
-            priority
+            preload
           />
           <div>
             <div>{c.about[0]}</div>
@@ -228,15 +247,31 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
       );
     case 'experience':
       return (
-        <div className="stack" style={{ gap: 20 }}>
-          {c.exp.map(([role, org, when, text]) => (
-            <div className="exp" key={role + org}>
+        <div className="stack" style={{ gap: 16 }}>
+          {c.jobs.map((j) => (
+            <div className="exp" key={j.org}>
               <div className="top">
-                <span className="w" style={{ fontWeight: 700 }}>{role}</span>
-                <span className="dim">{when}</span>
+                <span className="w" style={{ fontWeight: 700 }}>{j.role}</span>
+                <span className="dim">{j.when}</span>
               </div>
-              <div className="g">{org}</div>
-              <div className="soft">{text}</div>
+              <div className="g">{j.org}</div>
+              <div className="soft">{j.summary}</div>
+            </div>
+          ))}
+          <div className="dim">{x.full}</div>
+        </div>
+      );
+    case 'projects':
+      return (
+        <div className="stack" style={{ gap: 14 }}>
+          {c.projects.map((p) => (
+            <div className="exp" key={p.name}>
+              <span className="w" style={{ fontWeight: 700 }}>{p.name}</span>
+              <div className="soft">{p.text}</div>
+              {p.points?.map((x) => (
+                <div className="soft" key={x}>· {x}</div>
+              ))}
+              <div className="g">{p.tags}</div>
             </div>
           ))}
         </div>
@@ -287,7 +322,7 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
 function EntryView({ en, lang }: { en: Entry; lang: Lang }) {
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    const id = setTimeout(() => setReady(true), 450);
+    const id = setTimeout(() => setReady(true), 140);
     return () => clearTimeout(id);
   }, []);
   return (
@@ -311,12 +346,22 @@ function ConsoleLoader({ lang, onDone }: { lang: Lang; onDone: () => void }) {
 
   useEffect(() => {
     if (step >= total) {
-      const id = setTimeout(onDone, 350);
+      const id = setTimeout(onDone, 150);
       return () => clearTimeout(id);
     }
-    const id = setTimeout(() => setStep((n) => n + 1), 420);
+    const id = setTimeout(() => setStep((n) => n + 1), 170);
     return () => clearTimeout(id);
   }, [step, total, onDone]);
+
+  // any key or tap skips the boot animation
+  useEffect(() => {
+    window.addEventListener('keydown', onDone);
+    window.addEventListener('pointerdown', onDone);
+    return () => {
+      window.removeEventListener('keydown', onDone);
+      window.removeEventListener('pointerdown', onDone);
+    };
+  }, [onDone]);
 
   const pct = Math.min(100, Math.round((step / total) * 100));
   const filled = Math.round(pct / 5);
@@ -326,9 +371,9 @@ function ConsoleLoader({ lang, onDone }: { lang: Lang; onDone: () => void }) {
       <div className="bar">
         <div className="title" aria-hidden="true">guest@mda: ~</div>
       </div>
-      <main className="body" role="status">
-        <pre className="logo" aria-label="MDA">{LOGO}</pre>
-        <div className="boot-lines">
+      <main className="body">
+        <pre className="logo" role="img" aria-label="MDA">{LOGO}</pre>
+        <div className="boot-lines" aria-hidden="true">
           {lines.slice(0, step).map((l) => (
             <div key={l}>
               {'> ' + l + ' ... '}
@@ -336,15 +381,15 @@ function ConsoleLoader({ lang, onDone }: { lang: Lang; onDone: () => void }) {
             </div>
           ))}
         </div>
-        <div className="progress">{'[' + '█'.repeat(filled) + '░'.repeat(20 - filled) + '] ' + pct + '%'}</div>
+        <div className="progress" role="img" aria-label={pct + '%'}>{'[' + '█'.repeat(filled) + '░'.repeat(20 - filled) + '] ' + pct + '%'}</div>
       </main>
     </div>
   );
 }
 
-export default function Terminal() {
+export default function Terminal({ initial = 'gate' }: { initial?: 'gate' | 'console' }) {
   const [lang, setLang] = useState<Lang>('es');
-  const [view, setView] = useState<View>('gate');
+  const [view, setView] = useState<View>(initial === 'console' ? 'loadConsole' : 'gate');
   const [entries, setEntries] = useState<Entry[]>([{ id: 0, cmd: 'about' }]);
   const [value, setValue] = useState('');
 
@@ -352,6 +397,8 @@ export default function Terminal() {
   const hIndex = useRef(0);
   const nextId = useRef(1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const outRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const c = COPY[lang];
 
@@ -360,19 +407,44 @@ export default function Terminal() {
     setView('main');
   }, []);
   const goConsole = useCallback(() => setView('loadConsole'), []);
-  const goCv = useCallback(() => setView('loadCv'), []);
-  const showCv = useCallback(() => setView('soft'), []);
+  const goCv = useCallback(() => router.push(`/cv/${lang}`), [router, lang]);
+  const goHome = useCallback(() => (initial === 'console' ? router.push('/') : setView('gate')), [initial, router]);
+
+  // links back from /cv use /?lang=en#console
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get('lang');
+    if (q === 'es' || q === 'en') setLang(q);
+    if (window.location.hash === '#console') setView('loadConsole');
+    if (q || window.location.hash) window.history.replaceState(null, '', initial === 'console' ? '/console' : '/');
+    router.prefetch('/cv/es');
+    router.prefetch('/cv/en');
+  }, [router, initial]);
 
   useEffect(() => {
+    const prev = document.documentElement.lang;
     document.documentElement.lang = lang;
+    return () => {
+      document.documentElement.lang = prev;
+    };
   }, [lang]);
 
   useEffect(() => {
+    const el = outRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => el.scrollTo({ top: el.scrollHeight }));
+    ro.observe(el);
+    for (const child of Array.from(el.children)) ro.observe(child);
+    return () => ro.disconnect();
+  }, [entries, view]);
+
+  useEffect(() => {
     if (view !== 'main') return;
-    inputRef.current?.focus({ preventScroll: true });
+    if (window.matchMedia('(pointer: fine)').matches) inputRef.current?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
-      if (document.activeElement !== inputRef.current) inputRef.current?.focus({ preventScroll: true });
+      const a = document.activeElement;
+      if (a instanceof HTMLButtonElement || a instanceof HTMLAnchorElement) return;
+      if (a !== inputRef.current) inputRef.current?.focus({ preventScroll: true });
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -396,9 +468,17 @@ export default function Terminal() {
       setLang(cmd.slice(5) as Lang);
       setEntries((prev) => [...prev, { id: nextId.current++, cmd }].slice(-MAX_ENTRIES));
     } else if (cmd === 'exit' || cmd === 'back') {
-      setView('gate');
+      goHome();
     } else if (cmd === 'cv' || cmd === 'soft') {
-      setView('loadCv');
+      goCv();
+    } else if (cmd === 'pdf') {
+      const a = document.createElement('a');
+      a.href = cvPdf(lang);
+      a.download = '';
+      a.click();
+      setEntries((prev) => [...prev, { id: nextId.current++, cmd }].slice(-MAX_ENTRIES));
+    } else if (cmd === 'blog' && BLOG_ENABLED) {
+      router.push(`/blog/${lang}`);
     } else {
       const word = cmd.split(' ')[0];
       const known = KNOWN.includes(word) || cmd.startsWith('sudo');
@@ -426,13 +506,16 @@ export default function Terminal() {
   const onKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
     const h = history.current;
     if (e.key === 'Tab') {
-      e.preventDefault();
+      if (e.shiftKey) return;
       const v = value.trim().toLowerCase();
       if (!v) return;
       const prefix = v.startsWith('cd ') ? 'cd ' : '';
       const pool = prefix ? SECTIONS : COMMANDS;
       const matches = pool.filter((k) => k.startsWith(v.slice(prefix.length)));
-      if (matches.length === 1) setValue(prefix + matches[0]);
+      if (matches.length === 1) {
+        e.preventDefault();
+        setValue(prefix + matches[0]);
+      }
       return;
     }
     if (!h.length) return;
@@ -448,29 +531,26 @@ export default function Terminal() {
   };
 
   if (view === 'gate') return <Gate lang={lang} setLang={setLang} onConsole={goConsole} onCv={goCv} />;
-  if (view === 'loadCv') return <CvLoader lang={lang} onDone={showCv} />;
   if (view === 'loadConsole') return <ConsoleLoader lang={lang} onDone={enter} />;
-  if (view === 'soft') {
-    return <SoftView lang={lang} setLang={setLang} onConsole={goConsole} />;
-  }
 
   return (
     <div className="win">
       <div className="bar">
         <div className="title" aria-hidden="true">guest@mda: ~</div>
         <div className="ctrl">
-          <button className={`btn sq${lang === 'en' ? ' on' : ''}`} onClick={() => setLang('en')}>EN</button>
-          <button className={`btn sq${lang === 'es' ? ' on' : ''}`} onClick={() => setLang('es')}>ES</button>
+          <button className={`btn sq${lang === 'en' ? ' on' : ''}`} aria-pressed={lang === 'en'} onClick={() => setLang('en')}>EN</button>
+          <button className={`btn sq${lang === 'es' ? ' on' : ''}`} aria-pressed={lang === 'es'} onClick={() => setLang('es')}>ES</button>
           <button className="btn" onClick={goCv}>{EXTRA[lang].cv}</button>
+          {BLOG_ENABLED && <button className="btn" onClick={() => router.push(`/blog/${lang}`)}>Blog</button>}
           <a className="btn" href={`mailto:${EMAIL}`}>{c.contact}</a>
-          <button className="btn" onClick={() => setView('gate')}>{'< ' + c.back}</button>
+          <button className="btn" onClick={goHome}>{'< ' + c.back}</button>
         </div>
       </div>
 
       <main
         className="body"
         onClick={() => {
-          if (view === 'main' && !window.getSelection()?.toString()) inputRef.current?.focus({ preventScroll: true });
+          if (view === 'main' && window.matchMedia('(pointer: fine)').matches && !window.getSelection()?.toString()) inputRef.current?.focus({ preventScroll: true });
         }}
       >
         <>
@@ -485,9 +565,12 @@ export default function Terminal() {
                 .map(([k]) => (
                   <button key={k} className="btn" onClick={() => run(k, true)}>{k}</button>
                 ))}
+              {BLOG_ENABLED && (
+                <button className="btn" onClick={() => run('blog', true)}>blog</button>
+              )}
             </div>
 
-            <div id="out" className="stack" aria-live="polite">
+            <div id="out" ref={outRef} className="stack" aria-live="polite">
               {entries.map((en) => (
                 <EntryView key={en.id} en={en} lang={lang} />
               ))}

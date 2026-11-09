@@ -19,4 +19,4 @@ npx vercel          # preview. Nombre del proyecto: mgdamico
 npx vercel --prod   # producción
 ```
 
-Todo el contenido (textos EN/ES) está en `data/content.ts`. La terminal es `components/Terminal.tsx`.
+Todo el contenido (textos EN/ES) está en `data/content.ts`: lo usan la terminal (`components/Terminal.tsx`) y el CV estático e imprimible en `/cv/es` y `/cv/en` (`components/CvDocument.tsx`; "Descargar PDF" usa el diálogo de impresión).

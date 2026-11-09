@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="ui-monospace,Consolas,monospace" font-size="15">
+  <rect width="760" height="340" fill="#0d1117"/>
+  <g fill="none" stroke-width="2">
+    <rect x="30" y="135" width="130" height="70" rx="8" stroke="#5dff6a" fill="#0f2a16"/>
+    <rect x="250" y="115" width="200" height="110" rx="10" stroke="#a78bfa" fill="#1e1638"/>
+    <rect x="540" y="22" width="190" height="56" rx="8" stroke="#f59e0b" fill="#2d1d05"/>
+    <rect x="540" y="98" width="190" height="56" rx="8" stroke="#38bdf8" fill="#06243a"/>
+    <rect x="540" y="174" width="190" height="56" rx="8" stroke="#f472b6" fill="#33102a"/>
+    <rect x="540" y="250" width="190" height="56" rx="8" stroke="#34d399" fill="#062b20"/>
+    <path d="M160 170h90M450 150l90-100M450 160l90-34M450 180l90 22M450 190l90 88" stroke="#8b949e" stroke-dasharray="5 5"/>
+  </g>
+  <g fill="#e6edf3" text-anchor="middle">
+    <text x="95" y="166">dev</text><text x="95" y="186" font-size="12" fill="#8b949e">CLI · navegador</text>
+    <text x="350" y="160" font-size="18" fill="#c4b5fd">IDP interno</text><text x="350" y="186" font-size="12" fill="#8b949e">accesos · secretos · logs</text>
+    <text x="635" y="56">AWS</text><text x="635" y="132">Kubernetes</text><text x="635" y="208">GitHub</text><text x="635" y="284">Bases de datos</text>
+  </g>
+</svg>

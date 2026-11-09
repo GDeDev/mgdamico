@@ -1,0 +1,35 @@
+/* Giscus theme matching the site (flat, square, system font). Served from /giscus/dark.css */
+@import url("https://giscus.app/themes/dark.css");
+
+main {
+  --color-canvas-default: #111111;
+  --color-canvas-subtle: #1a1a1a;
+  --color-canvas-inset: #111111;
+  --color-fg-default: #e8e8e8;
+  --color-fg-muted: #9a9a9a;
+  --color-fg-subtle: #9a9a9a;
+  --color-border-default: #444444;
+  --color-border-muted: #444444;
+  --color-accent-fg: #e8e8e8;
+  --color-accent-emphasis: #e8e8e8;
+  --color-btn-bg: #111111;
+  --color-btn-border: #e8e8e8;
+  --color-btn-text: #e8e8e8;
+  --color-btn-hover-bg: #e8e8e8;
+  --color-btn-hover-border: #e8e8e8;
+  --color-btn-primary-bg: #e8e8e8;
+  --color-btn-primary-border: #e8e8e8;
+  --color-btn-primary-text: #111111;
+  --color-btn-primary-hover-bg: #e8e8e8;
+  --color-btn-primary-hover-border: #e8e8e8;
+  --color-btn-primary-selected-bg: #e8e8e8;
+  --color-input-bg: #111111;
+  --color-input-border: #444444;
+  --color-input-disabled-bg: #1a1a1a;
+  --color-primer-shadow-focus: none;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main { box-sizing: border-box; padding: 14px 18px !important; }
+* { border-radius: 0 !important; box-shadow: none !important; }
+.gsc-comment-box-textarea:focus, .gsc-comment-box-textarea:focus-visible { outline: 2px solid #e8e8e8 !important; outline-offset: -2px; }
