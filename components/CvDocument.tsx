@@ -97,12 +97,12 @@ export default function CvDocument({ lang }: { lang: Lang }) {
 
         <section>
           <h2>{t.sections[4]}</h2>
-          <Facts
-            items={[
-              ...c.learning,
-              [lang === 'es' ? 'Referencia' : 'Reference', `${lang === 'es' ? 'Secretaría NUCBA' : 'NUCBA Secretary’s Office'} - 11 2409-6552`],
-            ]}
-          />
+          <Facts items={c.learning} />
+        </section>
+
+        <section>
+          <h2>{lang === 'es' ? 'Referencias' : 'References'}</h2>
+          <p>{lang === 'es' ? 'Secretaría NUCBA' : 'NUCBA Secretary’s Office'} - 11 2409-6552</p>
         </section>
 
         <section className="no-print">

@@ -151,12 +151,12 @@ form input:focus-visible { outline: none; }
   .soft-page { min-height: 0; animation: none; font-size: 10.5pt; line-height: 1.45; }
   /* the PDF is always light, whatever theme is on screen */
   :root:not([data-print]) .soft-page { --bg:#fff; --fg:#111; --mut:#6b6b6b; --bd:#8a8a8a; color-scheme: light; }
-  .soft-main { max-width: none; padding: 0; gap: 14pt; }
+  .soft-main { max-width: none; padding: 0; gap: 10pt; }
   .soft-main h1 { font-size: 20pt; }
   .soft-main h2 { margin-bottom: 4pt; font-size: 9pt; color: #555; }
   .soft-photo { width: 72px; height: 90px; }
   .soft-hero { gap: 14pt; flex-wrap: nowrap; }
-  .soft-card { padding: 7pt 0; break-inside: avoid; }
+  .soft-card { padding: 5pt 0; break-inside: avoid; }
   .soft-card ul { font-size: 10pt; gap: 2pt; }
   .soft-facts { gap: 3pt; }
   .soft-facts dt { min-width: 90px; }
