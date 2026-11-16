@@ -29,7 +29,7 @@ export default function OgImage() {
           <div style={{ display: 'flex', color: '#5dff6a' }}>{'> whoami'}</div>
           <div style={{ display: 'flex', color: '#fff', fontSize: 68, fontWeight: 700 }}>{c.name}</div>
           <div style={{ display: 'flex', color: '#5dff6a', fontSize: 38 }}>{c.role}</div>
-          <div style={{ display: 'flex', color: '#b6d3bd' }}>TypeScript · NestJS · Next.js · AWS · Fintech</div>
+          <div style={{ display: 'flex', color: '#b6d3bd' }}>TypeScript · NestJS · Next.js · AWS</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#5dff6a' }}>
           {'guest@mda ~ $'}

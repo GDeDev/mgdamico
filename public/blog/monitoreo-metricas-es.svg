@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 200" role="img" aria-label="Diseño de referencia: los servicios emiten métricas a Prometheus y logs a Loki, Prometheus escribe en Mimir, Grafana consulta ambos y envía alertas por chat o correo según urgencia">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#858585"/></marker></defs>
+<g font-family="ui-monospace,Consolas,monospace" font-size="14" fill="#858585" text-anchor="middle" stroke="#858585" stroke-width="2">
+<rect x="20" y="65" width="130" height="70" fill="none"/>
+<rect x="200" y="20" width="130" height="56" fill="none"/>
+<rect x="380" y="20" width="110" height="56" fill="none"/>
+<rect x="200" y="124" width="130" height="56" fill="none"/>
+<rect x="540" y="65" width="110" height="70" fill="none"/>
+<rect x="690" y="65" width="110" height="70" fill="none"/>
+<g stroke="none">
+<text x="85" y="95">Servicios</text><text x="85" y="114">(señales)</text>
+<text x="265" y="53">Prometheus</text>
+<text x="435" y="53">Mimir</text>
+<text x="265" y="157">Loki</text>
+<text x="595" y="105">Grafana</text>
+<text x="745" y="95">Chat o correo</text><text x="745" y="114">según urgencia</text>
+</g>
+<path d="M150 88L198 50" marker-end="url(#a)" fill="none"/>
+<path d="M150 112L198 150" marker-end="url(#a)" fill="none"/>
+<path d="M330 48H378" marker-end="url(#a)" fill="none"/>
+<path d="M490 55L538 85" marker-end="url(#a)" fill="none"/>
+<path d="M330 152L538 115" marker-end="url(#a)" fill="none"/>
+<path d="M650 100H688" marker-end="url(#a)" fill="none"/>
+</g></svg>

@@ -16,6 +16,6 @@ export default async function Image({ params }: { params: Promise<{ lang: string
     prompt: lang === 'en' ? '> cat resume.md' : '> cat cv.md',
     title: c.name,
     subtitle: c.role,
-    footer: 'TypeScript · NestJS · Next.js · AWS · Fintech',
+    footer: 'TypeScript · NestJS · Next.js · AWS',
   });
 }

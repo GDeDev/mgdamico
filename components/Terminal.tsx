@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
-import { COPY, EMAIL, GITHUB, LOGO, cvPdf } from '../data/content';
+import { COPY, EMAIL, GITHUB, LOGO, WHATSAPP, cvPdf } from '../data/content';
 import type { Lang } from '../data/content';
 import { BLOG_ENABLED } from '../data/blog';
 import { Gate } from './Gate';
@@ -267,6 +267,7 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
           {c.projects.map((p) => (
             <div className="exp" key={p.name}>
               <span className="w" style={{ fontWeight: 700 }}>{p.name}</span>
+              {p.badge && <span className="g"> [{p.badge}]</span>}
               <div className="soft">{p.text}</div>
               {p.points?.map((x) => (
                 <div className="soft" key={x}>· {x}</div>
@@ -298,6 +299,9 @@ function Output({ cmd, lang, extra }: { cmd: string; lang: Lang; extra?: string[
           <div className="soft">{c.contactIntro}</div>
           <Row k="email">
             <a className="w" href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          </Row>
+          <Row k="whatsapp">
+            <a className="w" href={WHATSAPP.url} target="_blank" rel="noopener noreferrer">{WHATSAPP.display}</a>
           </Row>
           <Row k="github">
             <a className="w" href={GITHUB} target="_blank" rel="noopener noreferrer">github.com/GDeDev</a>

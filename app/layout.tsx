@@ -13,11 +13,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(site ? `https://${site}` : 'http://localhost:3000'),
   title: "Marco Giuliano D'Amico · Tech Lead · Full Stack",
   description:
-    "Marco Giuliano D'Amico. Tech Lead y desarrollador full stack TypeScript en fintech: NestJS, Next.js y AWS. Buenos Aires, Argentina.",
+    "Marco Giuliano D'Amico. Tech Lead y desarrollador full stack TypeScript: NestJS, Next.js y AWS. Buenos Aires, Argentina.",
   openGraph: {
     type: 'profile',
     title: "Marco Giuliano D'Amico · Tech Lead · Full Stack",
-    description: 'TypeScript · NestJS · Next.js · AWS · Fintech',
+    description: 'TypeScript · NestJS · Next.js · AWS',
     locale: 'es_AR',
   },
   twitter: { card: 'summary_large_image' },

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { BLOG_ENABLED } from '../data/blog';
-import { COPY, EMAIL, GITHUB } from '../data/content';
+import { COPY, EMAIL, GITHUB, WHATSAPP } from '../data/content';
 import type { Lang } from '../data/content';
 import ScrollTop from './ScrollTop';
 
@@ -34,6 +34,7 @@ export default function SiteFooter({ lang }: { lang: Lang }) {
         </div>
         <nav aria-label={lang === 'es' ? 'Enlaces' : 'Links'}>
           <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          <a href={WHATSAPP.url} target="_blank" rel="noopener noreferrer">WhatsApp</a>
           <a href={GITHUB} target="_blank" rel="noopener noreferrer">GitHub</a>
           <Link href={`/cv/${lang}`}>CV</Link>
           {BLOG_ENABLED && <Link href={`/blog/${lang}`}>Blog</Link>}

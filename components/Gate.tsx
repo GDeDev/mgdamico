@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { COPY as PROFILE } from '../data/content';
+import { COPY as PROFILE, cvPdf } from '../data/content';
 import type { Lang } from '../data/content';
 
 const COPY = {
@@ -41,6 +41,7 @@ export function Gate({
       </div>
       <h1>{PROFILE[lang].name}</h1>
       <p className="gate-role">{PROFILE[lang].role}</p>
+      <p className="gate-summary">{PROFILE[lang].summary}</p>
       <p className="gate-question">{t.question}</p>
       <div className="gate-opts">
         <button onClick={onConsole} aria-keyshortcuts="1 C">
@@ -49,6 +50,11 @@ export function Gate({
         </button>
         <button onClick={onCv} aria-keyshortcuts="2 V R">{t.cv}</button>
       </div>
+      <nav className="gate-links" aria-label={lang === 'es' ? 'Enlaces' : 'Links'}>
+        <a href={`/cv/${lang}`}>{t.cv}</a>
+        <a href={`/blog/${lang}`}>Blog</a>
+        <a href={cvPdf(lang)}>PDF</a>
+      </nav>
     </div>
   );
 }

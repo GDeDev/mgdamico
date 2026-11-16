@@ -1,9 +1,10 @@
 import Image from 'next/image';
-import { COPY, EMAIL, GITHUB } from '../data/content';
+import { COPY, EMAIL, GITHUB, WHATSAPP } from '../data/content';
 import type { Lang } from '../data/content';
 import SiteFooter from './SiteFooter';
 import HtmlLang from './HtmlLang';
 import SiteTop from './SiteTop';
+import ContactLinks from './ContactLinks';
 
 const LABELS = {
   es: {
@@ -44,6 +45,7 @@ export default function CvDocument({ lang }: { lang: Lang }) {
             <p className="soft-role">{c.role}</p>
             <p className="soft-meta">
               {c.location} · <a href={`mailto:${EMAIL}`}>{EMAIL}</a> ·{' '}
+              <a href={WHATSAPP.url} target="_blank" rel="noopener noreferrer">{WHATSAPP.display}</a> ·{' '}
               <a href={GITHUB} target="_blank" rel="noopener noreferrer">github.com/GDeDev</a>
             </p>
           </div>
@@ -65,9 +67,9 @@ export default function CvDocument({ lang }: { lang: Lang }) {
               </div>
               <div className="soft-org">{j.org}</div>
               <p>{j.summary}</p>
-              {j.bullets.length > 0 && (
+              {(j.cvBullets ?? j.bullets).length > 0 && (
                 <ul>
-                  {j.bullets.map((b) => (
+                  {(j.cvBullets ?? j.bullets).map((b) => (
                     <li key={b}>{b}</li>
                   ))}
                 </ul>
@@ -81,14 +83,8 @@ export default function CvDocument({ lang }: { lang: Lang }) {
           {c.projects.map((p) => (
             <article className="soft-card" key={p.name}>
               <strong>{p.name}</strong>
+              {p.badge && <span className="soft-badge">{p.badge}</span>}
               <p>{p.text}</p>
-              {p.points && (
-                <ul>
-                  {p.points.map((x) => (
-                    <li key={x}>{x}</li>
-                  ))}
-                </ul>
-              )}
               <div className="soft-org">{p.tags}</div>
             </article>
           ))}
@@ -96,7 +92,7 @@ export default function CvDocument({ lang }: { lang: Lang }) {
 
         <section>
           <h2>{t.sections[3]}</h2>
-          <Facts items={c.stack} />
+          <Facts items={c.cvStack} />
         </section>
 
         <section>
@@ -107,10 +103,7 @@ export default function CvDocument({ lang }: { lang: Lang }) {
         <section className="no-print">
           <h2>{t.sections[5]}</h2>
           <p>{c.contactIntro}</p>
-          <div className="soft-actions">
-            <a className="soft-btn" href={`mailto:${EMAIL}`}>{EMAIL}</a>
-            <a className="soft-btn alt" href={GITHUB} target="_blank" rel="noopener noreferrer">GitHub</a>
-          </div>
+          <ContactLinks lang={lang} />
         </section>
       </main>
       <SiteFooter lang={lang} />

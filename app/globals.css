@@ -244,3 +244,27 @@ form input:focus-visible { outline: none; }
 .scroll-top.on { opacity: 1; transform: none; pointer-events: auto; }
 .scroll-top:hover, .scroll-top:focus-visible { background: var(--fg); color: var(--bg); }
 @media (prefers-reduced-motion: reduce) { .scroll-top { transition: none; } }
+
+/* Contact buttons: animated icon + pop-up tooltip */
+.contact-btn { position: relative; display: inline-flex; align-items: center; gap: 10px; transition: transform .2s ease, box-shadow .2s ease; }
+.contact-btn:hover, .contact-btn:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 0 -2px var(--bd); opacity: 1; }
+.contact-ico { display: inline-flex; width: 20px; height: 20px; }
+.contact-ico svg, .contact-tip-ico svg { width: 100%; height: 100%; }
+.contact-tip { position: absolute; left: 50%; bottom: calc(100% + 12px); transform: translate(-50%, 8px) scale(.85); opacity: 0; pointer-events: none; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; padding: 7px 12px; font-size: 13px; background: var(--fg); color: var(--bg); border: 1px solid var(--fg); transition: opacity .18s ease, transform .22s cubic-bezier(.34, 1.56, .64, 1); }
+.contact-tip::after { content: ''; position: absolute; left: 50%; top: 100%; width: 8px; height: 8px; background: var(--fg); transform: translate(-50%, -50%) rotate(45deg); }
+.contact-tip-ico { display: inline-flex; width: 16px; height: 16px; }
+.contact-btn:hover .contact-tip, .contact-btn:focus-visible .contact-tip { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.contact-btn:hover .contact-ico, .contact-btn:focus-visible .contact-ico { animation: contact-wiggle .7s ease; }
+.contact-btn:hover .contact-tip-ico, .contact-btn:focus-visible .contact-tip-ico { animation: contact-bounce .9s ease .1s infinite; }
+.contact-btn.mail:hover .contact-ico svg path { animation: contact-flap .7s ease; transform-origin: 12px 6.5px; }
+.contact-btn.github:hover .contact-ico { animation: contact-spin .8s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes contact-wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-14deg); } 40% { transform: rotate(12deg); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(5deg); } }
+@keyframes contact-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes contact-flap { 0%, 100% { transform: scaleY(1); } 40% { transform: scaleY(-.6); } }
+@keyframes contact-spin { from { transform: rotate(-360deg) scale(.6); } to { transform: rotate(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .contact-btn, .contact-tip, .contact-ico, .contact-tip-ico, .contact-ico svg path { animation: none !important; transition: none !important; } }
+.soft-badge { display: inline-block; margin-left: 10px; padding: 1px 8px; font-size: 12px; border: 1px solid var(--bd); color: var(--mut); vertical-align: 1px; }
+.gate-summary { max-width: 520px; margin: -6px 0 0; text-align: center; color: #333; font-size: 15px; line-height: 1.5; }
+.gate-links { display: flex; gap: 18px; margin-top: 22px; font-size: 13px; }
+.gate-links a { color: #555; text-decoration: underline; text-underline-offset: 3px; }
+.gate-links a:hover { color: #111; }

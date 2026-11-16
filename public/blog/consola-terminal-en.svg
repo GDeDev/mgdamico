@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-label="Illustrated capture of the console: ls, a mistyped command and sudo">
+  <rect width="640" height="300" fill="#141414"/>
+  <rect width="640" height="30" fill="#242424"/>
+  <circle cx="18" cy="15" r="5" fill="#6a6a6a"/><circle cx="36" cy="15" r="5" fill="#6a6a6a"/><circle cx="54" cy="15" r="5" fill="#6a6a6a"/>
+  <text x="320" y="20" text-anchor="middle" font-family="ui-monospace,Consolas,Menlo,monospace" font-size="13" fill="#9a9a9a">guest@mda: ~</text>
+  <g font-family="ui-monospace,Consolas,Menlo,monospace" font-size="15" fill="#e8e8e8">
+    <text x="20" y="62"><tspan fill="#9a9a9a">&gt; guest@mda ~ $ </tspan>ls</text>
+    <text x="20" y="88" fill="#bdbdbd">1 about/   2 experience/   3 projects/   4 stack/</text>
+    <text x="20" y="108" fill="#bdbdbd">5 learning/   6 contact/</text>
+    <text x="20" y="150"><tspan fill="#9a9a9a">&gt; guest@mda ~ $ </tspan>proyects</text>
+    <text x="20" y="176" fill="#bdbdbd">command not found: <tspan font-weight="700">proyects</tspan>. Type "help" for the list.</text>
+    <text x="20" y="198" fill="#bdbdbd">Did you mean <tspan font-weight="700" fill="#e8e8e8">projects</tspan>?</text>
+    <text x="20" y="240"><tspan fill="#9a9a9a">&gt; guest@mda ~ $ </tspan>sudo rm -rf /</text>
+    <text x="20" y="266" fill="#bdbdbd">Permission denied: this user has no sudo.</text>
+  </g>
+</svg>

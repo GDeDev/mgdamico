@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 240" role="img" aria-label="Reference design: traffic goes through the WAF to the application; the WAF, GuardDuty and CloudTrail feed findings to Security Hub, which notifies through EventBridge and SNS by severity">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#858585"/></marker></defs>
+<g font-family="ui-monospace,Consolas,monospace" font-size="14" fill="#858585" text-anchor="middle" stroke="#858585" stroke-width="2">
+<rect x="20" y="20" width="130" height="56" fill="none"/>
+<rect x="230" y="20" width="130" height="56" fill="none"/>
+<rect x="440" y="20" width="150" height="56" fill="none"/>
+<rect x="220" y="156" width="150" height="68" fill="none"/>
+<rect x="440" y="160" width="150" height="56" fill="none"/>
+<rect x="670" y="160" width="130" height="56" fill="none"/>
+<g stroke="none">
+<text x="85" y="53">Traffic</text>
+<text x="295" y="53">AWS WAF</text>
+<text x="515" y="53">Application</text>
+<text x="295" y="176">WAF logs</text><text x="295" y="194">GuardDuty</text><text x="295" y="212">CloudTrail</text>
+<text x="515" y="182">Security Hub</text><text x="515" y="200">(findings)</text>
+<text x="735" y="182">EventBridge, SNS</text><text x="735" y="200">by severity</text>
+</g>
+<path d="M150 48H228" marker-end="url(#a)" fill="none"/>
+<path d="M360 48H438" marker-end="url(#a)" fill="none"/>
+<path d="M295 76V154" marker-end="url(#a)" stroke-dasharray="5 4" fill="none"/>
+<path d="M370 188H438" marker-end="url(#a)" fill="none"/>
+<path d="M590 188H668" marker-end="url(#a)" fill="none"/>
+</g></svg>

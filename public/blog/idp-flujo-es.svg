@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 262" role="img" aria-label="Referencia: el dev usa portal o CLI y plantillas de la plataforma, que despliegan a los entornos con guardrails en el camino, y una salida de emergencia documentada">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#858585"/></marker></defs>
+<g font-family="ui-monospace,Consolas,monospace" font-size="15" fill="#858585" text-anchor="middle" stroke="#858585" stroke-width="2">
+<rect x="15" y="30" width="120" height="90" fill="none"/>
+<rect x="205" y="30" width="230" height="90" fill="none"/>
+<rect x="505" y="30" width="200" height="90" fill="none"/>
+<rect x="205" y="160" width="500" height="50" fill="none" stroke-dasharray="6 5"/>
+<g stroke="none">
+<text x="75" y="80">Dev</text>
+<text x="320" y="62">Portal o CLI</text><text x="320" y="82">+ plantillas</text><text x="320" y="102">+ documentación</text>
+<text x="605" y="70">Entornos</text><text x="605" y="90">(prueba, producción)</text>
+<text x="455" y="182" font-size="14">Escaneo · secretos validados</text><text x="455" y="200" font-size="14">aprobación manual a producción</text>
+<text x="360" y="248" font-size="14">salida de emergencia: documentada y visible</text>
+</g>
+<path d="M135 75H203" marker-end="url(#a)" fill="none"/>
+<path d="M435 75H503" marker-end="url(#a)" fill="none"/>
+<path d="M455 120V158" fill="none" stroke-dasharray="3 4"/>
+<path d="M75 120V225H605V122" fill="none" stroke-dasharray="3 4" marker-end="url(#a)"/>
+</g></svg>

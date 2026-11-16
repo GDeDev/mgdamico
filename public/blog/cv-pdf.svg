@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 150" role="img" aria-label="npm run pdf imprime cada idioma con Chrome headless">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#858585"/></marker></defs>
+<g font-family="ui-monospace,Consolas,monospace" font-size="14" fill="#858585" text-anchor="middle" stroke="#858585" stroke-width="2">
+<rect x="10" y="40" width="200" height="70" fill="none"/><rect x="260" y="40" width="200" height="70" fill="none"/><rect x="510" y="40" width="200" height="70" fill="none"/>
+<g stroke="none"><text x="110" y="70">localhost:3000</text><text x="110" y="92">/cv/es, /cv/en</text>
+<text x="360" y="70">chrome --headless</text><text x="360" y="92">--print-to-pdf</text>
+<text x="610" y="70">public/</text><text x="610" y="92">Giuliano-DAmico-CV-*.pdf</text></g>
+<path d="M210 75H258" marker-end="url(#a)" fill="none"/><path d="M460 75H508" marker-end="url(#a)" fill="none"/>
+</g></svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" role="img" aria-label="Antes: slides y Zoom con el docente transmitiendo. Ahora: proyecto real, tutor con IA y docente mentor">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#858585"/></marker></defs>
+<g font-family="ui-monospace,Consolas,monospace" font-size="15" fill="#858585" text-anchor="middle" stroke="#858585" stroke-width="2">
+<rect x="90" y="30" width="150" height="56" fill="none"/>
+<rect x="300" y="30" width="150" height="56" fill="none"/>
+<rect x="510" y="30" width="150" height="56" fill="none"/>
+<rect x="30" y="160" width="190" height="60" fill="none"/>
+<rect x="285" y="160" width="190" height="60" fill="none"/>
+<rect x="540" y="160" width="190" height="60" fill="none"/>
+<g stroke="none">
+<text x="40" y="63" text-anchor="start" font-size="14">Antes</text>
+<text x="165" y="63">Slides</text><text x="375" y="63">Zoom</text><text x="585" y="63">Ejercicio</text>
+<text x="40" y="150" text-anchor="start" font-size="14">Ahora</text>
+<text x="125" y="186">Proyecto real</text><text x="125" y="206" font-size="12">objetivo propio</text>
+<text x="380" y="186">Tutor con IA</text><text x="380" y="206" font-size="12">responde al instante</text>
+<text x="635" y="186">Docente mentor</text><text x="635" y="206" font-size="12">revisa el proceso</text>
+</g>
+<path d="M240 58H298" marker-end="url(#a)" fill="none"/>
+<path d="M450 58H508" marker-end="url(#a)" fill="none"/>
+<path d="M220 190H283" marker-end="url(#a)" fill="none"/>
+<path d="M475 190H538" marker-end="url(#a)" fill="none"/>
+</g></svg>
